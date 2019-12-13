@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta name="renderer" content="webkit" /> 
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+	<meta content="yes" name="apple-mobile-web-app-capable">
+	<meta content="black" name="apple-mobile-web-app-status-bar-style">
+	<meta content="telephone=no" name="format-detection">
+	<meta content="email=no" name="format-detection">
+    <meta name="description" content="Xfunction 拟提供互联网工具服务，特别提供短地址服务">
+	<meta name="keywords" content="缩短网址,网址压缩,网址缩短,短网址,短域名,短地址,短URL,免费缩短网址,短链接生成器,短网址生成,免费缩址,域名伪装,域名转向,网站推广,短链接,长网址变短网址">
+	<meta name="author" content="kelvin Dong">
+    <title>XFunction</title>
+    <style type="text/css">
+        *{margin: 0;padding: 0;}
+        body{ font:14px Helvetica,Tahoma,Arial,"\5FAE\8F6F\96C5\9ED1",sans-serif;color:#222;}
+        .wrapper{text-align: center;height: 100%;position: fixed;min-height: 500px;width: 100%;}
+        .wrapper img {margin-top:15%;margin-bottom:-27px}
+        .input{margin-top: 30px;}
+        .error{margin-top: 2px;color:red;}
+        .input input{width: 400px;height: 32px;}
+        .input button{width: 80px;height: 37px;}        
+        
+        .footer{position: absolute;bottom: 0px; width: 100%;background:#1976d2;color:white}        
+        .result{margin-top: 20px;}        
+        .copyClip{width: 60px;height: 27px;}
+        
+        .title{}
+        .master{font-size:3em;font-weight:bold;}
+        
+    </style>
+<!-- script 引入文件放在前面，防止页面展示时显示angular的程序信息，把运行代码放在body后，这些运行很快的 -->
+<script type="text/javascript" src="../js/jquery-2.2.1.min.js"></script>
+<script type="text/javascript" src="../js/jquery.qrcode.min.js"></script>
+<script type="text/javascript" src="../js/angular.min.js"></script>
+<script type="text/javascript" src="../js/config.js"> </script>
+<script type="text/javascript" src="../js/utils.js"> </script>
+<script type="text/javascript" src="../js/layer/layer.js"> </script>
+<script type="text/javascript" src="../js/clipboard.min.js"> </script>
+</head>
+<body ng-app="app" ng-controller="activityCtrl"  >
+    <div class="wrapper">
+		<div class="title">
+			<a href="../" style="color: #000000; text-decoration:none;"><img src="../images/trans-black-full-logo.png" width="280px"> </a><span style="margin-left:5px;cursor:pointer" onclick="showTips();">短链接</span>
+		</div>
+        <div class="input">
+            <input type="text" ng-model="bizLinkUrl" placeholder="http://make sure that the url can be visited./">
+            <button ng-click="get()" id="idGet">{{getTitle}}</button><br>
+        </div>
+        <div class="error" ng-show = "inputFlag">
+            <span id="errorId">{{errorMsg}}</span>
+        </div>
+        <div class="result" ng-show="resultFlag" >
+            <span>Short URL： <a  href="{{resultBizLinkId64}}" target="_blank" id="resultBizLinkId64">{{resultBizLinkId64}}</a></span>    <button class="copyClip">拷贝</button> 
+            <br>
+    		<span>Original URL：<a href="{{resultBizLinkUrl}}" target="_blank">{{resultBizLinkUrl}}</a></span>
+    		<br>
+    		<span>Stats:{{resultBizLinkVisitSum}}</span>
+    		<br>    		
+    		<div id="qrCode" style="margin-top: 20px;"></div>              
+        </div>
+        <div class="footer">
+        		<div title="针对长期无访问的短链接，平台保留在不通知的情况下删除的权利">*仅供学习 无需注册 长久有效*</div>
+                <span>©2019 学习笔记   xfunction.cn  xfu.biz</span>      
+        </div>
+    </div>
+</body>
+
+<script type="text/javascript">
+var app = angular.module('app', []);
+app.controller('activityCtrl', function($scope,$http,$window) {
+	
+	$scope.inputFlag=false;
+	$scope.resultFlag=false;	
+	$scope.bizShortLink= null;		
+	$scope.getTitle="生成/查看";
+	$scope.statsUrl="";	
+		
+	$scope.get=function(){
+
+		$scope.resultFlag=false;
+		
+		var bizLinkUrl = $scope.bizLinkUrl;//已经帮助去除后面的空格
+		
+		if(checkUrl(bizLinkUrl) && checkOurUrl(bizLinkUrl)){ //合法
+			$scope.inputFlag=false;
+		}else{
+			$scope.errorMsg="输入链接不合法";
+			$scope.inputFlag=true;
+			$scope.$apply();//Angular的双向绑定在和第三方类库混用的时候有时会失效
+			return;
+		}
+		
+		$("#idGet").prop('disabled',true);
+		$scope.getTitle="提交中..";
+		
+		var param ={bizLinkUrl: bizLinkUrl};		
+		var ajaxPost = $.ajax({
+			type: "post",
+			url: baseUrlCon.baseAPI+'shortLink/set',
+			timeout: 30000,// 超时设置
+			contentType: 'application/json', 
+		   	data:JSON.stringify(param),
+		   	dataType: "json",
+		    success: function(data) {
+		    	
+		    	if(data.success){
+		    		$scope.bizLinkUrl=null;
+		    		$scope.resultFlag=true;
+		    		console.log(data.data)
+		    		var temp="https://xfu.biz/"+data.data.bizLinkId64;
+		    		$scope.resultBizLinkId64 = temp;
+		    		$scope.resultBizLinkUrl=data.data.bizLinkUrl;
+		    		$scope.resultBizLinkVisitSum = data.data.bizLinkVisitSum;
+		    		$scope.statsUrl = "stats.htm?code="+data.data.bizLinkId64
+		    		generateQrCode(temp)		    		
+		    	}else{		    		
+		    		$scope.errorMsg=data.msg;
+					$scope.inputFlag=true;
+		    	}   
+		    	$("#idGet").prop('disabled',false);
+		    	$scope.getTitle="生成/查看";
+		    	
+		    	$scope.$apply();//Angular的双向绑定在和第三方类库混用的时候有时会失效
+		    },
+		    error:function(){	
+		    	$("#idGet").prop('disabled',false);
+		    	$scope.getTitle="生成/查看";
+		    	
+		    	$scope.errorMsg="失败！请重试，并保证输入URL可以被正常访问！";
+				$scope.inputFlag=true;
+		    	$scope.$apply();//Angular的双向绑定在和第三方类库混用的时候有时会失效
+		    },
+		    complete : function(XMLHttpRequest,status){
+		    	if(status=='timeout'){
+		    		ajaxPost.abort();
+		    		
+		    		$("#idGet").prop('disabled',false);
+			    	$scope.getTitle="XFun";
+			    	
+			    	$scope.errorMsg="超时！请重试，并保证输入URL可以被正常访问！";
+					$scope.inputFlag=true;
+			    	$scope.$apply();//Angular的双向绑定在和第三方类库混用的时候有时会失效
+		    	}
+		    }
+		});
+	};
+		
+	
+});
+
+
+function generateQrCode(url) {
+	$('#qrCode').html("");
+    jQuery('#qrCode').qrcode({
+        render: "canvas", //也可以替换为table
+        width: 170,
+        height: 170,
+        text: url
+    });
+    
+}
+
+
+var clipboard = new Clipboard('.copyClip', {
+    text: function() {
+        return $("#resultBizLinkId64").html();
+    }
+});
+
+clipboard.on('success', function(e) {
+    //console.log(e);
+});
+
+clipboard.on('error', function(e) {
+    console.log(e);
+});
+
+
+function showTips(){
+	layer.open({
+		title : '一般而言，使用短链接的优势有以下几点',
+		content : '1、易于阅读，看起来整洁干净，提高用户体验和点击率，利于复制粘贴。<br>2、减少url占用空间<br>3、便于链接追踪<br>4、一定程度上保护网站链接<br>5、利于SEO<br>6、利于品牌信息的传递',
+		btn : '关闭'
+	});
+}
+
+</script>
+</html>
