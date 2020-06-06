@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags always come first -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>短链接 | xfunction.cn </title>
+
+    @@include('../include/css.html',{ "relatepath":"../.." })
+
+    <style>
+        .view canvas {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+
+<body class="fixed-sn white-skin">
+    @@include('../include/progress.html',{"relatepath":"../.." }) @@include('../include/head.html',{"relatepath":"../.."})
+    <!--Main Layout-->
+    <main>
+        <div class="container my-5 z-depth-1">
+            <!--Section: Content-->
+            <section class="dark-grey-text p-5">
+                <!-- Grid row -->
+                <div class="row">
+                    <!-- Grid column -->
+                    <div class="col-md-4 mb-4 mb-md-0">
+                        <div class="view" id="qrCodeHide">
+                            <img src="https://mdbootstrap.com/img/illustrations/undraw_Group_chat_unwm.svg" class="img-fluid" alt="smaple image">
+                        </div>
+                        <div id="qrCodeShow" class="hide-control">
+                            <a onclick="dlPic('')">>1000px 下载</a>
+                            <div class="view" id="qrCode">
+                            </div>
+                            <a onclick="dlPic('600')">>600px 下载</a>
+                            <div class="view" style="width: 60%;" id="qrCode600">
+                                <canvas></canvas>
+                            </div>
+                            <a onclick="dlPic('300')">>300px 下载</a>
+                            <div class="view" style="width: 30%;" id="qrCode300">
+                                <canvas></canvas>
+                            </div>
+                        </div>
+
+                        <!--
+                        <div class="card">
+                            <img src="https://mdbootstrap.com/img/illustrations/undraw_Group_chat_unwm.svg" class="card-img-top" alt="smaple image">
+                            <div class="card-body">
+                                <h4 class="card-title">card title</h4>
+                                <p class="card-text">some quick example text to build one the card title and make up the </p>
+                                <a href="#" class="btn btn-primary">Button</a>
+                            </div>
+                        </div>
+                        -->
+                    </div>
+                    <!-- Grid column -->
+                    <!-- Grid column -->
+                    <div class="col-md-8 mb-lg-0 mb-4">
+                        <h3 class="font-weight-bold my-2">短链接/短网址/短地址</h3>
+                        <p class="text-muted mb-1 pb-2">
+                            实现将形如：htts://www.xfunction/shortLink/index.html的网址收缩成https://xfu.biz/zdfXs形态的网址。</p>
+                        <!-- Form -->
+                        <form id="shorLinkForm" class="needs-validation animated fadeIn" novalidate>
+                            <!-- Section heading -->
+
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="bizLinkUrl" required pattern="^(?=^.{3,255}$)(http(s)?:\/\/).+$" placeholder="输入收缩的网址" aria-label="输入收缩的网址" aria-describedby="button-getShortUrl">
+                                <div class="input-group-append">
+                                    <button class="btn btn-md btn-primary rounded-right m-0 px-3 py-2 z-depth-0 waves-effect" type="button" id="button-getShortUrl" onclick="getShortUrl()">生成</button>
+                                </div>
+                            </div>
+                            <small class="form-text black-text"><strong>* 请确保收缩地址可以正常访问。</strong></small>
+                        </form>
+                        <form id="shorLinkResultForm" class="hide-control animated">
+                            <a onclick="getAnother()"><small>* 再生成一个。</small></a>
+                            <div class="input-group">
+                                <input type="text" readonly class="form-control" name="bizLinkId64" id="bizLinkId64" aria-label="拷贝收缩后的网址" aria-describedby="button-copyShortUrl">
+                                <div class="input-group-append">
+                                    <button class="btn btn-md btn-primary rounded m-0 px-3 py-2 z-depth-0 waves-effect" type="button" id="button-copyShortUrl">拷贝</button>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="inputLogoStr">1|图标</span>
+                                </div>
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="inputLogo" onchange="showModel()" onclick="this.value=''" accept="image/jpeg,image/png" aria-describedby="inputLogoStr">
+                                    <label class="custom-file-label" data-browse="浏览" for="inputLogo"></label>
+                                </div>
+                            </div>
+                            <div class="form-row my-3">
+                                <!-- Material inline 1 -->
+                                <div class="col form-check form-check-inline">
+                                    <input type="radio" class="form-check-input" id="logoType1" name="logoType" value="logo1" checked onclick="modifyQrcode()">
+                                    <label class="form-check-label" for="logoType1"></label>
+                                    <canvas id="logo1" width="200" height="200" style="width: 50px;"></canvas>
+                                </div>
+
+                                <!-- Material inline 2 -->
+                                <div class="col form-check form-check-inline">
+                                    <input type="radio" class="form-check-input" id="logoType2" name="logoType" value="logo2" onclick="modifyQrcode()">
+                                    <label class="form-check-label" for="logoType2"></label>
+                                    <canvas id="logo2" width="200" height="200" class="z-depth-1" style="border-radius:50%; width:50px"></canvas>
+                                </div>
+
+                                <!-- Material inline 3 -->
+                                <div class="col form-check form-check-inline">
+                                    <input type="radio" class="form-check-input" id="logoType3" name="logoType" value="logo3" onclick="modifyQrcode()">
+                                    <label class="form-check-label" for="logoType3"></label>
+                                    <canvas id="logo3" width="200" height="200" class="z-depth-1" style="border-radius:20%;width: 50px;"></canvas>
+                                </div>
+
+                                <div class="col form-check form-check-inline">
+                                    <input type="radio" class="form-check-input" id="logoType4" name="logoType" value="logo4" onclick="modifyQrcode()">
+                                    <label class="form-check-label" for="logoType4">none</label>
+                                    <canvas id="logo4" width="200" height="200" style="border-radius:20%;width: 50px;"></canvas>
+                                </div>
+                            </div>
+
+
+                            <div class="input-group ">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="inputLogoStr">2|文案</span>
+                                </div>
+                                <input type="text" class="form-control" name="remark1" placeholder="提示第一行" onchange="modifyQrcode()" aria-label="第一行备注" aria-describedby="button-remark1">
+                                <input type="text" class="form-control" name="remark2" placeholder="提示第二行" onchange="modifyQrcode()" aria-label="第二行备注" aria-describedby="button-remark2">
+                                <!--
+                                <div class="input-group-append">
+                                    <button class="btn btn-md btn-primary rounded m-0 px-3 py-2 z-depth-0 waves-effect"
+                                        type="button" id="button-remark2" onclick="modifyQrcode()">确认</button>
+                                </div>
+                                -->
+                            </div>
+                            <div class="form-row my-1">
+                                <div class="col form-group">
+                                    <label for="remarkFontSize">大小</label>
+                                    <select class="browser-default custom-select" name="remarkFontSize" id="remarkFontSize" onchange="modifyQrcode()">
+                                            <option value="56" selected>0</option>
+                                            <option value="64">1</option>
+                                            <option value="72">2</option>
+                                            <option value="80">3</option>
+                                            <option value="88">4</option>
+                                            <option value="96">5</option>
+                                            <option value="104">6</option>
+                                            <option value="112">7</option>
+                                            <option value="120">8</option>
+                                            <option value="128">9</option>
+                                        </select>
+                                </div>
+                                <div class="col">
+                                    <label for="remarkFontStyle">字体</label>
+                                    <select class="browser-default custom-select" name="remarkFontStyle" id="remarkFontStyle" onchange="modifyQrcode()">
+                                            <option value="SimSun">宋体</option>
+                                            <option value="SimHei" selected>黑体</option>
+                                            <option value="KaiTi">楷体</option>
+                                        </select>
+                                </div>
+                                <div class="col">
+                                    <label for="remarkFontColor">颜色</label>
+                                    <input type="text" class="form-control" id="remarkFontColor" value="#000000" name="remarkFontColor">
+                                </div>
+
+                            </div>
+
+                            <div class="form-row my-1">
+
+                                <div class="col">
+                                    <label for="remarkFontColor">前景主色</label>
+                                    <div class="input-group ">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">3|颜色</span>
+                                        </div>
+                                        <input type="text" class="form-control" id="foreground" value="#000000" name="foreground">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <label for="remarkFontColor">前景辅色</label>
+                                    <input type="text" class="form-control" id="foregroundEnd" value="#0000FF" name="foregroundEnd">
+                                </div>
+                                <div class="col">
+                                    <label for="foregroundType">前景模式</label>
+                                    <select class="browser-default custom-select" name="foregroundType" id="foregroundType" onchange="modifyQrcode()">
+                                            <option value="0" selected>纯色</option>
+                                            <option value="1">横向渐变</option>
+                                            <option value="2">纵向渐变</option>
+                                            <option value="3">右下渐变</option>
+                                            <option value="4">左下渐变</option>
+                                            <option value="5">中心渐变</option>
+                                        </select>
+                                </div>
+                                <div class="col">
+                                    <label for="remarkFontColor">背景色</label>
+                                    <input type="text" class="form-control" id="background" value="#ffffff" name="background">
+                                </div>
+
+                            </div>
+                        </form>
+                        <!-- Form -->
+                    </div>
+                </div>
+                <!-- Grid row -->
+            </section>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="cropeModual" tabindex="-1" role="dialog" aria-labelledby="cropeModualTitle" aria-hidden="true">
+            <!-- Add .modal-dialog-centered to .modal-dialog to vertically center the modal -->
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cropeModualTitle">LOGO 裁剪</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="max-width: 100%; max-height: 50vh; text-align: center;">
+                            <!--cropper根据此父dom初始化大小-->
+                            <img id="cropeModualImg" style="max-width: 100%; max-height: 50vh;">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">放弃</button>
+                        <button type="button" class="btn btn-primary" onclick="confirmCropper()">确认</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--
+        <div class="container ">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">帮助</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false"><i class="fas fa-user pr-2"></i>历史</a>
+                </li>
+
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+
+                    <section class="documentation">
+                        <h2 class="primary-heading">基本介绍</h2>
+                        
+                        <p>短链接</p>
+                    </section>
+
+
+                </div>
+                <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth
+                    letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS salvia yr, vero magna velit sapiente labore stumptown.
+                    Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park.</div>
+            </div>
+        </div>
+        -->
+
+    </main>
+    <!--Main Layout-->
+
+    @@include('../include/foot.html',{"relatepath":"../.."}) @@include('../include/js.html',{ "relatepath":"../.." })
+
+    <script type="text/javascript">
+        // SideNav Initialization
+        $(".button-collapse").sideNav();
+
+        // cropper 建议加载完modal 后再初始化
+        $('#cropeModual').on('shown.bs.modal', function(e) {
+            console.log("cropeModual has showed");
+
+            var $image = $('#cropeModualImg');
+
+            $image.cropper({
+                aspectRatio: 1,
+                crop: function(event) {
+                    /*
+                    console.log(event.detail.x);
+                    console.log(event.detail.y);
+                    console.log(event.detail.width);
+                    console.log(event.detail.height);
+                    console.log(event.detail.rotate);
+                    console.log(event.detail.scaleX);
+                    console.log(event.detail.scaleY);
+                    */
+                }
+            });
+            var cropper = $image.data('cropper');
+            cropper.replace($('#cropeModualImg')[0].src);
+        });
+
+        var logoResult;
+
+        function confirmCropper() {
+            var $image = $('#cropeModualImg');
+            var cropper = $image.data('cropper');
+            logoResult = cropper.getCroppedCanvas()
+            modifyQrcode();
+            $('#cropeModual').modal('hide')
+        }
+
+        // 加载图片文件后，再激活model
+        function showModel() {
+            if ($("#inputLogo")[0].files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    // 防止图片过大，造成之后的cropper崩了
+                    var img = new Image();
+                    img.src = this.result;
+                    img.onload = function() {
+                        var reWidth = 1000;
+                        var canvas = document.createElement('canvas'); // 创建一个canvas元素
+                        var context = canvas.getContext('2d'); // context相当于画笔，里面有各种可以进行绘图的API
+                        var w = img.width;
+                        var h = img.height;
+                        if (w > reWidth) {
+                            w = reWidth;
+                            h = (img.height / img.width) * w;
+                        }
+                        var quality = 1; // 默认图片质量为0.7
+                        canvas.width = w;
+                        canvas.height = h;
+                        context.drawImage(img, 0, 0, w, h);
+                        var url = canvas.toDataURL('image/jpeg', quality);
+                        $('#cropeModualImg').prop("src", url);
+                        $('#cropeModualImg')[0].onload = function(e) {
+                            $('#cropeModual').modal("show");
+                        };
+                    };
+                }
+                reader.readAsDataURL($("#inputLogo")[0].files[0]);
+            }
+        }
+
+
+        function getShortUrl() {
+            $("#shorLinkForm")[0].classList.add('was-validated'); // 启用验证
+            if ($("#shorLinkForm")[0].checkValidity() === false) {
+                return;
+            }
+            $.ajax({
+                url: baseUrlCon.baseAPI + 'shortLink/set',
+                data: JSON.stringify($("#shorLinkForm").serializeFormToJson()),
+                success: function(result, status, xhr) {
+                    if (result.success) {
+                        console.log(result.data);
+                        $("#shorLinkForm").addClass("fadeOut");
+                        $("#shorLinkForm").hide();
+                        $("#qrCodeShow").show();
+                        $("#qrCodeHide").hide();
+
+                        var formSet = result.data;
+                        formSet.bizLinkId64 = "https://xfu.biz/" + formSet.bizLinkId64;
+                        $("#shorLinkResultForm").fillForm(formSet);
+                        $("#shorLinkResultForm").addClass("fadeIn");
+                        $("#shorLinkResultForm").show();
+                        // generateQrCode(formSet.bizLinkId64);
+                        modifyQrcode();
+                    } else {
+                        toastr.info(result.code + ":" + result.msg + " " + (result.errorMsg ? result.errorMsg : ""));
+                    }
+                },
+            });
+        }
+
+        function getAnother() {
+            console.log("getAnother");
+            $("#shorLinkForm")[0].reset();
+            $("#shorLinkResultForm").hide();
+            $("#shorLinkForm").show();
+            $("#shorLinkForm").removeClass("fadeOut");
+            $("#qrCodeShow").hide();
+            $("#qrCodeHide").show();
+        }
+
+
+        function genMore() {
+            var qrCode = $('#qrCode canvas')[0];
+
+            //var qrCode600 = $('#qrCode600 canvas')[0];
+            var qrCode600 = document.createElement('canvas');
+            qrCode600.width = qrCode.width * 0.6;
+            qrCode600.height = qrCode.height * 0.6;
+            var ctx600 = qrCode600.getContext("2d");
+            ctx600.drawImage(qrCode, 0, 0, qrCode600.width, qrCode600.height);
+            $('#qrCode600').append(qrCode600);
+
+            // var qrCode300 = $('#qrCode300 canvas')[0];
+            var qrCode300 = document.createElement('canvas');
+            qrCode300.width = qrCode.width * 0.3;
+            qrCode300.height = qrCode.height * 0.3;
+            var ctx300 = qrCode300.getContext("2d");
+            ctx300.drawImage(qrCode, 0, 0, qrCode300.width, qrCode300.height);
+            $('#qrCode300').append(qrCode300);
+        }
+
+        function dlPic(id) {
+            console.log("dl1000");
+            var canvas = $('#qrCode' + id + ' canvas')[0];
+            var url = canvas.toDataURL("image/png"); //得到图片的base64编码数据
+            var a = document.createElement("a"); // 生成一个a元素
+            var event = new MouseEvent("click"); // 创建一个单击事件
+            a.download = "photo" + id; // 设置图片名称
+            a.href = url; // 将生成的URL设置为a.href属性
+            a.dispatchEvent(event); // 触发a的单击事件
+        }
+
+        var rendering = false;
+        var config;
+
+        function modifyQrcode() {
+            if (rendering) return;
+            rendering = true;
+            $('#qrCode').html("");
+            $('#qrCode600').html("");
+            $('#qrCode300').html("");
+            config = $("#shorLinkResultForm").serializeFormToJson();
+            if (logoResult) {
+                config.logo = $("#" + config.logoType + "")[0];
+                var img = logoResult;
+                // 原图
+                var logo1Canvas = $("#logo1")[0];
+                var ctx1 = logo1Canvas.getContext('2d');
+                ctx1.drawImage(img, 0, 0, 200, 200);
+
+                // 圆形边框
+                // 1、备用80*80的图
+                var logoCanvas = document.createElement('canvas');
+                logoCanvas.width = 200;
+                logoCanvas.height = 200;
+                var ctx = logoCanvas.getContext("2d");
+                ctx.drawImage(img, 20, 20, 160, 160);
+                // 2、先画圆形50白色填充
+                var logo2Canvas = $("#logo2")[0];
+                var ctx2 = logo2Canvas.getContext('2d');
+                ctx2.fillStyle = config.background;
+                ctx2.beginPath(); //按照下边参数开始绘制新路径
+                ctx2.arc(100, 100, 100, 0, Math.PI * 2, true);
+                ctx2.closePath(); //关闭路径
+                ctx2.fill();
+                // 3、圆形40 备用图片填充
+                var pattern = ctx2.createPattern(logoCanvas, 'no-repeat')
+                ctx2.fillStyle = pattern;
+                ctx2.beginPath(); //按照下边参数开始绘制新路径
+                ctx2.arc(100, 100, 80, 0, Math.PI * 2, true);
+                ctx2.closePath(); //关闭路径
+                ctx2.fill();
+                //矩形边框
+                var logo3Canvas = $("#logo3")[0];
+                var ctx3 = logo3Canvas.getContext('2d');
+                // 1、先画白色的矩形
+                drawLogoRectBack(ctx3);
+                // 2、图片
+                ctx3.drawImage(img, 20, 20, 160, 160);
+
+                setTimeout(function() {
+                    $('#qrCode').qrcode(config);
+                    genMore();
+                    rendering = false;
+                }, 500);
+            } else {
+                config.logo = null;
+                $('#qrCode').qrcode(config);
+                genMore();
+                rendering = false;
+            }
+
+        }
+
+        var clipboard = new Clipboard('#button-copyShortUrl', {
+            text: function() {
+                toastr.success("拷贝成功");
+                return $("#bizLinkId64").val();
+            }
+        });
+
+        clipboard.on('success', function(e) {
+            //console.log(e);
+        });
+
+        clipboard.on('error', function(e) {
+            console.log(e);
+        });
+
+        $("#remarkFontColor").colorPicker({
+            renderCallback: function($elm, toggled) {
+                // console.log("renderCallback");
+                modifyQrcode();
+            }
+        });
+
+        $("#foreground").colorPicker({
+            renderCallback: function($elm, toggled) {
+                // console.log("renderCallback");
+                modifyQrcode();
+            }
+        });
+
+        $("#foregroundEnd").colorPicker({
+            renderCallback: function($elm, toggled) {
+                // console.log("renderCallback");
+                modifyQrcode();
+            }
+        });
+        $("#background").colorPicker({
+            renderCallback: function($elm, toggled) {
+                // console.log("renderCallback");
+                modifyQrcode();
+            }
+        });
+
+
+
+        function drawLogoRectBack(ctx) {
+            ctx.save();
+            //ctx.translate(options.width/2-options.logoR, options.height/2-options.logoR);
+            ctx.fillStyle = config.background;
+
+            var width = 200;
+            var height = 200;
+            var radius = 40;
+
+            ctx.beginPath(0);
+            //从右下角顺时针绘制，弧度从0到1/2PI  
+            ctx.arc(width - radius, height - radius, radius, 0, Math.PI / 2);
+            //矩形下边线  
+            ctx.lineTo(radius, height);
+            //左下角圆弧，弧度从1/2PI到PI  
+            ctx.arc(radius, height - radius, radius, Math.PI / 2, Math.PI);
+            //矩形左边线  
+            ctx.lineTo(0, radius);
+            //左上角圆弧，弧度从PI到3/2PI  
+            ctx.arc(radius, radius, radius, Math.PI, Math.PI * 3 / 2);
+            //上边线  
+            ctx.lineTo(width - radius, 0);
+            //右上角圆弧  
+            ctx.arc(width - radius, radius, radius, Math.PI * 3 / 2, Math.PI * 2);
+            //右边线  
+            ctx.lineTo(width, height - radius);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+
+        }
+    </script>
+
+</body>
+
+</html>

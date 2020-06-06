@@ -1,0 +1,64 @@
+<!-- SCRIPTS -->
+<!-- JQuery -->
+<script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" src="@@relatepath/statics/js/min/mdb.js">
+</script>
+<script type="text/javascript" src="@@relatepath/statics/js/min/clipboard.min.js"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" src="@@relatepath/statics/js/min/popper.min.js"></script>
+<script type="text/javascript" src="@@relatepath/statics/js/global.js"></script>
+<script type="text/javascript" src="@@relatepath/statics/js/cropper.js"></script>
+<script type="text/javascript" src="@@relatepath/statics/js/jquery-cropper.js"></script>
+<script type="text/javascript" src="@@relatepath/statics/js/qrcode.js"></script>
+<script type="text/javascript" src="@@relatepath/statics/js/jquery.qrcode.js"></script>
+<!--https://github.com/PitPik/tinyColorPicker-->
+<script type="text/javascript" src="@@relatepath/statics/js/min/jqColorPicker.min.js"></script>
+
+
+<script>
+</script>
+
+
+<!-- Baidu Analytics -->
+
+<script>
+    var _hmt = _hmt || [];
+    (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?09d635a5d01cc827134bf1a72d01bb41";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+<!-- Baidu Push -->
+
+<script>
+    (function() {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+<script>
+    (function() {
+        var userInfo = window.localStorage.getItem("userInfo");
+        if (isEmpty(userInfo)) {
+            $("#noLogin").removeClass("hide-control");
+            $("#logined").addClass('hide-control');
+        } else {
+            $("#noLogin").addClass("hide-control");
+            $("#logined").removeClass('hide-control');
+        }
+    })();
+</script>
