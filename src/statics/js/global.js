@@ -1,5 +1,6 @@
 var baseUrlCon = {
     baseAPI: "https://api.xfunction.cn/",
+    //baseAPI: "http://127.0.0.1:8090/",
 };
 /*
         (function($) {…})(jQuery); 匿名函数
@@ -54,7 +55,6 @@ $(function() {
         //async: true, // 默认为true 
         //cache: true, // 默认为true
         beforeSend: function(xhr) {
-            console.log("beforeSend");
             $("#progressBar").removeClass("d-none");
         }, //发送请求前可修改 XMLHttpRequest 对象的函数，如添加自定义 HTTP 头。
         //context: this,  // 用于设置 Ajax 相关回调函数的上下文
@@ -101,10 +101,7 @@ $(function() {
                 form.classList.remove('was-validated');
             });
 
-            console.log("ajax:" + this.url);
-            console.log("   data:" + this.data);
-            console.log(xhr);
-            console.log(status);
+            
         },
     });
 
@@ -198,6 +195,15 @@ function getUserAvatar() {
         return null;
     } else {
         return JSON.parse(userInfo).userAvatar;
+    }
+}
+
+function getUserToken() {
+    var userInfo = window.localStorage.getItem("userInfo");
+    if (isEmpty(userInfo)) {
+        return null;
+    } else {
+        return JSON.parse(userInfo).accessToken;
     }
 }
 

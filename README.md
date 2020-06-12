@@ -10,6 +10,7 @@
       * index.html www.xfunction.cn的准静态页面。
       * **shortLink**
         * **index.html 短链接生成操作页面。**
+        * **decode.html 短链接还原操作页面。**
         * **redirect.html  访问短链接的跳转页面。**
     * statics
       * css
@@ -55,10 +56,19 @@
   ```
  
 
-  ## [API应用服务在( xfunction-api )中的位置](https://github.com/KelvinDong/xfunction-api)
+## [API应用服务在( xfunction-api )中的位置](https://github.com/KelvinDong/xfunction-api)
 
 * modules/shortlink/* 短链接相关
 
+## DEMO
+
+  https://www.xfunction.cn/html/index.html
+
+## 更新记录
+
+* 2020-05-01 初步完成
+* 2020-06-11 实现活码，允许用户对原有短链接绑定新的URL。
+* 2020-06-12 实现短链接还原。
  
  ![生成页面](https://acebridge2019.oss-cn-shanghai.aliyuncs.com/201910/x/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200608150651.png)
 ![生成结果](https://acebridge2019.oss-cn-shanghai.aliyuncs.com/201910/x/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200608150830.png)
